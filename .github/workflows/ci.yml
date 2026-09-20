@@ -31,3 +31,9 @@ jobs:
 
       - name: Run tests
         run: uv run pytest
+
+# Sources:
+# https://docs.github.com/en/actions/tutorials/create-an-example-workflow#viewing-the-activity-for-a-workflow-run
+# https://github.com/marketplace?type=actions
+# other github actions documentation
+
