@@ -19,7 +19,7 @@ jobs:
           version: "latest"
 
       - name: Run uv sync
-        run: uv sync --extra dev --frozen
+        run: uv sync --group dev --frozen
 
       - name: Run ruff linting and formatting 
         run: |
