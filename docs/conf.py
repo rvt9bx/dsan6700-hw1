@@ -6,9 +6,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u"mypkg"
-copyright = u"2026, Monty Python"
-author = u"Monty Python"
+project = "mypkg"
+copyright = "2026, Monty Python"
+author = "Monty Python"
 
 # -- General configuration ---------------------------------------------------
 
