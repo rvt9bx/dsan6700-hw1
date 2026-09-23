@@ -41,7 +41,7 @@ uv sync
 
 On MacOS or Linux:
 ```
-uv run uvicorn mypkg.mypkg:app --reload
+PYTHONPATH=src uv run uvicorn mypkg.mypkg:app --reload
 # check health endpoint
 curl http://127.0.0.1:8000/health
 # check prediction endpoint
