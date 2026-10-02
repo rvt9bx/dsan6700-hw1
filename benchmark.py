@@ -13,7 +13,7 @@ async def send_request(client: httpx.AsyncClient, req_id: int) -> float:
     response = await client.post(URL, json=PAYLOAD)
     duration = time.perf_counter() - start
     print(
-        f"Request {req_id} finished in {duration:.4f}s " 
+        f"Request {req_id} finished in {duration:.4f}s "
         f"with status {response.status_code}"
     )
     return duration
