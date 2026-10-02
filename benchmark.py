@@ -26,7 +26,6 @@ async def main():
     print("\n--- RESULTS ---")
     print(f"Total Time: {total_wall_time:.4f} seconds")
     print(f"Slowest Request Time:  {max(durations):.4f} seconds")
-    print(f"Fastest Request Time:  {min(durations):.4f} seconds")
 
 if __name__ == "__main__":
     asyncio.run(main())
