@@ -1,8 +1,8 @@
-# DSAN 6700 Homework 1
+# DSAN 6700 Homework 2
 
 ## Project Overview
 
-This project is a minimal FastAPI web service for DSAN 6700 HW 1. 
+This project is a minimal FastAPI web service for DSAN 6700 HW 2. 
 
 It has two endpoints:
 

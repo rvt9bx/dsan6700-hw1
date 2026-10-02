@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+import time # added time for blocking-call audit
 
 app = FastAPI(title="dsan6700-hw1")
 
@@ -28,7 +29,14 @@ class PredictResponse(BaseModel):
     prediction: str
 
 
+# @app.post("/predict")
+# def predict(payload: PredictRequest) -> PredictResponse:
+#     """Echo the input text back as a placeholder prediction."""
+#     return PredictResponse(prediction=f"echo: {payload.text}")
+
+# INTENTIONAL BLOCKING CALL 
 @app.post("/predict")
-def predict(payload: PredictRequest) -> PredictResponse:
-    """Echo the input text back as a placeholder prediction."""
-    return PredictResponse(prediction=f"echo: {payload.text}")
+async def predict_blocking(payload: PredictRequest):
+    # time.sleep stands in for synchronous model inference on the event loop
+    time.sleep(1.0) 
+    return {"result": f"processed: {payload.text}"}
