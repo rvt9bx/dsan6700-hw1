@@ -32,3 +32,11 @@ class PredictResponse(BaseModel):
 def predict(payload: PredictRequest) -> PredictResponse:
     """Echo the input text back as a placeholder prediction."""
     return PredictResponse(prediction=f"echo: {payload.text}")
+
+
+# INTENTIONAL BLOCKING CALL
+# @app.post("/predict")
+# async def predict_blocking(payload: PredictRequest):
+#     # time.sleep stands in for synchronous model inference on the event loop
+#     time.sleep(1.0)
+#     return {"result": f"processed: {payload.text}"}
