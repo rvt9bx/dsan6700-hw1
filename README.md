@@ -32,7 +32,7 @@ uv python install 3.12
 
 On MacOS or Linux:
 ```
-git clone 
+git clone https://github.com/rvt9bx/dsan6700-hw1.git
 cd dsan6700-hw1
 uv sync
 ```
