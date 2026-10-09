@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from mypkg.config import Settings
+
 app = FastAPI(title="dsan6700-hw1")
+settings = Settings()
 
 
 class HealthResponse(BaseModel):
