@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -48,7 +50,7 @@ class PredictResponse(BaseModel):
 
 
 @app.post("/predict", response_model=PredictResponse)
-def predict_endpoint(request: PredictRequest):
+def predict_endpoint(request: PredictRequest) -> dict[Any, Any]:
     """API route exposing the embedding service."""
     prediction = embedder.predict(input_text=request.text)
     return prediction
