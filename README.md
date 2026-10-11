@@ -37,11 +37,24 @@ cd dsan6700-hw1
 uv sync
 ```
 
+### Configure Environment:
+
+```
+cp .env.local.example .env
+```
+or 
+```
+cp .env.production.example .env
+```
+
+Add Hugging Face API key to use a gated embedding model. 
+
 ### Run the Web Service and Verify:
 
 On MacOS or Linux:
 ```
-PYTHONPATH=src uv run uvicorn mypkg.mypkg:app --reload
+PYTHONPATH=src 
+uv run uvicorn mypkg.mypkg:app --reload
 # check health endpoint
 curl http://127.0.0.1:8000/health
 # check prediction endpoint
