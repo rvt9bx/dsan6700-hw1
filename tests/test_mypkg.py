@@ -1,12 +1,24 @@
 import asyncio
 import time
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 
-from mypkg.mypkg import app
+from mypkg.mypkg import app, get_embedder
+
+# Mock output matching PredictResponse structure
+MOCK_PREDICTION_OUTPUT = {
+    "text": "Hello world",
+    "embedding_dim": 384,
+    "embedding": [0.1] * 384,  # Synthetic 384-dimensional vector
+}
+
+# Mock embedder instance
+mock_embedder = MagicMock()
+mock_embedder.predict.return_value = MOCK_PREDICTION_OUTPUT
+app.dependency_overrides[get_embedder] = lambda: mock_embedder
 
 client = TestClient(app)
 
@@ -19,19 +31,11 @@ def test_health_returns_ok():
     assert response.json() == {"status": "ok, service is up and running"}
 
 
-# Mock output matching PredictResponse structure
-MOCK_PREDICTION_OUTPUT = {
-    "text": "Hello world",
-    "embedding_dim": 384,
-    "embedding": [0.1] * 384,  # Synthetic 384-dimensional vector
-}
-
-
-@patch("mypkg.mypkg.embedder.predict")
-def test_predict_endpoint_success(mock_predict):
+def test_predict_endpoint_success():
     """Test /predict endpoint with a mocked embedding prediction."""
 
-    mock_predict.return_value = MOCK_PREDICTION_OUTPUT
+    mock_embedder.predict.reset_mock()
+    mock_embedder.predict.return_value = MOCK_PREDICTION_OUTPUT
 
     payload = {
         "text": "Hello world",
@@ -49,7 +53,7 @@ def test_predict_endpoint_success(mock_predict):
     assert len(data["embedding"]) == 384
 
     # Ensure the embedder method was actually called with right params
-    mock_predict.assert_called_once_with(
+    mock_embedder.predict.assert_called_once_with(
         input_text="Hello world",
     )
 
@@ -63,8 +67,7 @@ def test_predict_rejects_empty_text():
 
 
 @pytest.mark.anyio
-@patch("mypkg.mypkg.embedder.predict")
-async def test_predict_endpoint_does_not_block_health(mock_predict):
+async def test_predict_endpoint_does_not_block_health():
     """
     Tests that a synchronous CPU-heavy predict operation running on a worker thread
     does not block the main event loop from serving /health.
@@ -75,7 +78,7 @@ async def test_predict_endpoint_does_not_block_health(mock_predict):
         time.sleep(1.0)  # Blocking synchronous CPU delay
         return MOCK_PREDICTION_OUTPUT
 
-    mock_predict.side_effect = slow_embed
+    mock_embedder.predict.side_effect = slow_embed
 
     # 2. Set up the async test client
     transport = ASGITransport(app=app)
@@ -107,4 +110,7 @@ async def test_predict_endpoint_does_not_block_health(mock_predict):
             f"Health check was delayed! Took {health_duration:.2f}s"
         )
         assert predict_res.status_code == 200
-        assert mock_predict.called
+        assert mock_embedder.predict.called
+
+    # Reset side effect
+    mock_embedder.predict.side_effect = None
