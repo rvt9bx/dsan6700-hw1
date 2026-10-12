@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from pydantic import BaseModel, ConfigDict, Field
 
 from mypkg.config import Settings
@@ -9,8 +9,13 @@ from mypkg.embeddings import TextEmbedder
 app = FastAPI(title="dsan6700-hw1")
 settings = Settings()
 
-# Initialize embedder globally at startup to load weights into memory once
-embedder = TextEmbedder()
+
+# Dependency provider function
+def get_embedder() -> Any:
+    # Lazily instantiate or load once
+    if not hasattr(app.state, "embedder"):
+        app.state.embedder = TextEmbedder()
+    return app.state.embedder
 
 
 class HealthResponse(BaseModel):
@@ -50,7 +55,9 @@ class PredictResponse(BaseModel):
 
 
 @app.post("/predict", response_model=PredictResponse)
-def predict_endpoint(request: PredictRequest) -> dict[Any, Any]:
+def predict_endpoint(
+    request: PredictRequest, embedder: TextEmbedder = Depends(get_embedder)
+) -> dict[Any, Any]:
     """API route exposing the embedding service."""
     prediction = embedder.predict(input_text=request.text)
     return prediction
