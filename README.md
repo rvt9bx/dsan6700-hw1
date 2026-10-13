@@ -15,7 +15,7 @@ It has two endpoints:
 
 Nkemdibe Okweye, Noelle Martell, Erin Brzusek, Ellie Byrd
 
-## Installation and Running 
+## Local Installation and Running
 
 ### Install Prerequisites:
 
