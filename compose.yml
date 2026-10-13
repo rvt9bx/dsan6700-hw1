@@ -1,0 +1,27 @@
+# No external dependencies: this service has no database, vector store, or
+# cache. The embedding model is downloaded from Hugging Face Hub at startup
+# (see src/mypkg/embeddings.py) and cached in a named volume so it survives
+# container restarts instead of re-downloading every time.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dsan6700-hw
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Mounted at the whole home directory, not just .cache/huggingface:
+      # Docker initializes a new named volume with the ownership of
+      # whatever already exists at the mount path in the image. /home/app
+      # is created app-owned by the Dockerfile's `useradd --create-home`;
+      # a deeper mount path doesn't exist yet, so Docker would default it
+      # to root and the non-root app user couldn't write its model cache.
+      - hf-cache:/home/app
+    restart: unless-stopped
+
+volumes:
+  hf-cache:
