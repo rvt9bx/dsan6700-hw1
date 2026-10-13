@@ -14,7 +14,13 @@ services:
     env_file:
       - .env
     volumes:
-      - hf-cache:/home/app/.cache/huggingface
+      # Mounted at the whole home directory, not just .cache/huggingface:
+      # Docker initializes a new named volume with the ownership of
+      # whatever already exists at the mount path in the image. /home/app
+      # is created app-owned by the Dockerfile's `useradd --create-home`;
+      # a deeper mount path doesn't exist yet, so Docker would default it
+      # to root and the non-root app user couldn't write its model cache.
+      - hf-cache:/home/app
     restart: unless-stopped
 
 volumes:
