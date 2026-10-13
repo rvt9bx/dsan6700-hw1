@@ -25,3 +25,36 @@ Here is one request passing through start to finish:
 ## Discussion
 
 Placing a synchronous blocking call inside an `async def` handler stalls FastAPI's single-threaded event loop, forcing concurrent incoming requests to execute sequentially in a queue. Offloading the operation to a worker thread pool (via a plain `def` handler or `asyncio.to_thread`) frees the event loop to immediately accept and handle all 10 incoming requests concurrently.
+
+---
+
+# Docker Image Metrics
+
+## Image Size
+
+| Metric | Value |
+| :--- | :--- |
+| **Image size on disk** | 9.3 GB (`docker images` reports 9.301GB) |
+
+## Rebuild Time After a One-Line Code Change
+
+| Build Type | Time |
+| :--- | :--- |
+| **With cached dependency layer** (`uv sync` layer reused) | ~3.0 seconds |
+| **No cache** (`docker build --no-cache`, full clean build) | ~3 minutes 11.6 seconds (191.6s) |
+
+## docker system df (stack running)
+
+```
+TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE
+Images          1         1         9.301GB   0B (0%)
+Containers      1         1         32.77kB   0B (0%)
+Local Volumes   1         1         0B        0B
+Build Cache     29        0         19.31GB   9.73GB
+```
+
+## Discussion
+
+Caching the dependency-install layer (`uv sync --frozen --no-dev --no-install-project`, run before the source is copied) makes the rebuild roughly 64x faster: a one-line source change only reruns the final `uv sync` step and image export, since nothing upstream of `COPY src ./src` in the Dockerfile changed. A full `--no-cache` build reruns every layer from scratch, including a ~48-second dependency download and install plus apt package installation.
+
+The image's 9.3GB size comes from `sentence-transformers`'s dependency on full GPU-enabled PyTorch (`torch`, `nvidia-cublas`, `nvidia-cudnn`, `triton`, and related packages), even though this service only runs a small CPU-bound model (`all-MiniLM-L6-v2`) and Jetstream2's `m3.medium` instance has no GPU. A CPU-only torch build would substantially reduce this.
