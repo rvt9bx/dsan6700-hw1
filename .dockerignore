@@ -1,0 +1,9 @@
+# Environment files (configuration is supplied at run time)
+.env
+.env.*
+
+# Virtual environment
+.venv/
+
+# Git history
+.git/
