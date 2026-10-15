@@ -17,8 +17,8 @@ Here is one request passing through start to finish:
 
 | Metric | Blocking (`async def` + `time.sleep`) | Fixed (`def` / `asyncio.to_thread`) |
 | :--- | :--- | :--- |
-| **Wall-Clock Time** | 10.2655 sec | 0.1219 sec |
-| **Slowest Time** | 10.2430 sec | 0.1098 sec |
+| **Wall-Clock Time** | 10.2655 sec | 1.0278 sec |
+| **Slowest Time** | 10.2430 sec | 1.0270 sec |
 
 ---
 
