@@ -9,7 +9,7 @@ It has two endpoints:
 | Endpoint | Method | Purpose|
 |----|----|----|
 | /health | GET | Check the health of the API |
-| /predict | POST | Placeholder prediction endpoint | 
+| /predict | POST | Return a text embedding for the input text | 
 
 **Authors:**
 
@@ -53,8 +53,7 @@ Add Hugging Face API key to use a gated embedding model.
 
 On MacOS or Linux:
 ```
-PYTHONPATH=src 
-uv run uvicorn mypkg.mypkg:app --reload
+PYTHONPATH=src uv run uvicorn mypkg.mypkg:app --reload
 # check health endpoint
 curl http://127.0.0.1:8000/health
 # check prediction endpoint
