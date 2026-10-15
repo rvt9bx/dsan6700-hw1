@@ -1,3 +1,5 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import Depends, FastAPI
@@ -6,15 +8,21 @@ from pydantic import BaseModel, ConfigDict, Field
 from mypkg.config import Settings
 from mypkg.embeddings import TextEmbedder
 
-app = FastAPI(title="dsan6700-hw1")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+    """Load the embedding model once at startup."""
+    app.state.embedder = TextEmbedder()
+    yield
+
+
+app = FastAPI(title="dsan6700-hw1", lifespan=lifespan)
 settings = Settings()
 
 
 # Dependency provider function
 def get_embedder() -> Any:
-    # Lazily instantiate or load once
-    if not hasattr(app.state, "embedder"):
-        app.state.embedder = TextEmbedder()
+    """Return the model loaded at startup."""
     return app.state.embedder
 
 
